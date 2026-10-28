@@ -1,38 +1,33 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IntegerQuest</title>
-    <!-- Tailwind CSS CDN -->
+    <title>IntegerLab Kids: Math Hero E-Device</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Fredoka & Outfit for ultra-playful & modern UI -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti for Game Victory Effects -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
-                        heading: ['Fredoka', 'system-ui', '-apple-system', 'sans-serif'],
-                        body: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+                        sans: ['Outfit', 'sans-serif'],
+                        display: ['Fredoka', 'cursive'],
                     },
                     colors: {
-                        pos: {
-                            DEFAULT: '#10B981',
-                            dark: '#059669',
-                            glow: '#34D399'
-                        },
-                        neg: {
-                            DEFAULT: '#EF4444',
-                            dark: '#DC2626',
-                            glow: '#F87171'
-                        },
-                        brand: {
-                            blue: '#3B82F6',
-                            purple: '#8B5CF6',
-                            amber: '#F59E0B',
-                            darkBg: '#0F172A',
-                            cardBg: '#1E293B'
+                        hero: {
+                            purple: '#8b5cf6',
+                            pink: '#ec4899',
+                            cyan: '#06b6d4',
+                            yellow: '#f59e0b',
+                            lime: '#84cc16',
+                            darkBg: '#0f172a'
                         }
                     }
                 }
@@ -40,1457 +35,846 @@
         }
     </script>
     <style>
-        body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #0F172A;
-            color: #F8FAFC;
-            user-select: none;
-            touch-action: manipulation;
+        /* Glassmorphism & Custom Animations */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            border: 2px solid rgba(255, 255, 255, 0.6);
         }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-6px); }
+        .glass-card-dark {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            border: 2px solid rgba(255, 255, 255, 0.15);
         }
-        .animate-float { animation: float 3s ease-in-out infinite; }
-
-        @keyframes popIn {
-            0% { transform: scale(0.6); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+        .neon-glow-pink {
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.5);
         }
-        .animate-pop { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-
-        .chip-pos {
-            background: radial-gradient(circle at 30% 30%, #ffffff, #e2e8f0);
-            color: #0f172a;
-            box-shadow: 0 4px 10px rgba(255, 255, 255, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.8);
-            border: 2px solid #cbd5e1;
+        .neon-glow-cyan {
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
         }
-        .chip-neg {
-            background: radial-gradient(circle at 30% 30%, #334155, #0f172a);
-            color: #ffffff;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.2);
-            border: 2px solid #475569;
+        .neon-glow-yellow {
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
         }
 
-        /* Zero Pair Vanishing Animation */
-        @keyframes vanishPair {
-            0% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 10px #f59e0b); }
-            50% { transform: scale(1.25); opacity: 0.8; filter: drop-shadow(0 0 20px #ef4444); }
-            100% { transform: scale(0); opacity: 0; }
+        @keyframes bounce-subtle {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-8px) scale(1.02); }
         }
-        .animate-vanish {
-            animation: vanishPair 1s ease-in-out forwards;
+        .animate-mascot { animation: bounce-subtle 3s ease-in-out infinite; }
+
+        @keyframes pulse-pair {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.15); opacity: 0.8; }
         }
+        .animate-pair { animation: pulse-pair 1.2s ease-in-out infinite; }
 
         /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #1E293B; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
-
-        /* PRINT MEDIA STYLES FOR HIGH QUALITY E-CERTIFICATE */
-        @media print {
-            body * {
-                visibility: hidden !important;
-            }
-            .no-print, header, nav, footer, .tab-view, #cert-modal {
-                display: none !important;
-            }
-            #printable-certificate, #printable-certificate * {
-                visibility: visible !important;
-            }
-            #printable-certificate {
-                display: flex !important;
-                position: absolute !important;
-                left: 0 !important;
-                top: 0 !important;
-                width: 100% !important;
-                height: 100% !important;
-                margin: 0 !important;
-                padding: 40px !important;
-                box-sizing: border-box !important;
-                background: #ffffff !important;
-                color: #0f172a !important;
-                border: 12px double #b45309 !important;
-                border-radius: 16px !important;
-            }
-            @page {
-                size: landscape;
-                margin: 0;
-            }
-        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
+        ::-webkit-scrollbar-thumb { background: #8b5cf6; border-radius: 99px; }
+        
+        .no-select { user-select: none; -webkit-user-select: none; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between overflow-x-hidden selection:bg-brand-purple selection:text-white">
+<body class="bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 text-slate-800 min-h-screen font-sans flex flex-col justify-between no-select overflow-x-hidden relative">
 
-    <!-- TOP HEADER / NAV -->
-    <header class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 px-4 py-3 no-print">
-        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-3">
-            <!-- Brand Logo -->
-            <div class="flex items-center gap-3 cursor-pointer" onclick="showTab('home')">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-blue to-brand-purple flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-brand-blue/30">
-                    <span class="font-extrabold text-2xl">ℤ</span>
+    <!-- BACKGROUND PLAYFUL FLOATING SHAPES -->
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-20">
+        <div class="absolute -top-10 -left-10 w-72 h-72 bg-pink-500 rounded-full blur-3xl"></div>
+        <div class="absolute top-1/2 right-0 w-96 h-96 bg-cyan-400 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-20 left-1/3 w-80 h-80 bg-yellow-400 rounded-full blur-3xl"></div>
+    </div>
+
+    <!-- TOP NAV / GAME HEADER -->
+    <header class="relative z-10 px-4 py-3 bg-slate-950/40 backdrop-blur-md border-b border-white/10 text-white">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+            
+            <!-- App Branding -->
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-yellow-400 via-pink-500 to-cyan-400 p-1 shadow-lg shadow-pink-500/30 flex items-center justify-center animate-mascot">
+                    <div class="bg-slate-950 w-full h-full rounded-xl flex items-center justify-center">
+                        <i class="fa-solid fa-wand-magic-sparkles text-yellow-300 text-2xl"></i>
+                    </div>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-extrabold tracking-wide bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                        IntegerQuest
-                    </h1>
-                    <div class="flex items-center gap-1.5">
-                        <span class="text-[10px] text-slate-400 font-semibold uppercase tracking-widest">Math Fair Web App</span>
-                        <span id="offline-status-badge" class="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 text-[9px] font-bold border border-emerald-500/30">
-                            OFFLINE READY
+                    <div class="flex items-center gap-2">
+                        <h1 class="font-display font-extrabold text-2xl tracking-wide bg-gradient-to-r from-yellow-300 via-pink-400 to-cyan-300 bg-clip-text text-transparent">
+                            INTEGERLAB KIDS
+                        </h1>
+                        <span class="bg-yellow-400 text-slate-950 text-xs font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider font-display shadow-sm">
+                            ★ GRADE 7 MATH HERO ★
                         </span>
                     </div>
+                    <p class="text-xs text-purple-200">Interactive Math Fair E-Device for Signed Numbers</p>
                 </div>
             </div>
 
-            <!-- Student Profile & Score Display -->
-            <div class="flex items-center gap-3">
-                <div class="hidden sm:flex items-center bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700 gap-2">
-                    <svg class="w-4 h-4 text-brand-purple" fill="currentColor" viewBox="0 0 20 20"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-2.75-1.024A1 1 0 011 12.22v-1.82a1 1 0 011.31-.983zM18 10.397v1.82a1 1 0 01-1.25.973 8.97 8.97 0 00-2.75 1.024V10.12l1.69-.723a1 1 0 011.31.983z"/></svg>
-                    <input type="text" id="global-student-name" placeholder="Enter Your Name..." oninput="saveStudentName(this.value)" class="bg-transparent border-none text-xs font-bold text-white focus:outline-none w-32 md:w-44">
-                </div>
-
-                <div class="flex items-center gap-4 bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700">
-                    <div class="flex items-center gap-1.5" title="Total Score">
-                        <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1.323l3.954 1.582 1.599-.8a1 1 0 011.342 1.248l-.8 1.6 1.582 3.954H20a1 1 0 110 2h-1.323l-1.582 3.954.8 1.6a1 1 0 01-1.342 1.248l-1.599-.8L11 18.677V20a1 1 0 11-2 0v-1.323l-3.954-1.582-1.599.8a1 1 0 01-1.342-1.248l.8-1.6L1.323 11H0a1 1 0 110-2h1.323l1.582-3.954-.8-1.6a1 1 0 011.342-1.248l1.599.8L9 4.323V3a1 1 0 011-1z" clip-rule="evenodd"/></svg>
-                        <span id="nav-score" class="font-bold text-slate-100 text-sm">0</span>
-                    </div>
-                    <div class="w-px h-4 bg-slate-700"></div>
-                    <div class="flex items-center gap-1.5" title="Streak">
-                        <span class="text-orange-500 font-bold text-sm">🔥</span>
-                        <span id="nav-streak" class="font-bold text-slate-100 text-sm">0</span>
-                    </div>
-                </div>
-
-                <!-- Controls -->
-                <button id="sound-btn" onclick="toggleSound()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all border border-slate-700" title="Toggle Sound">
-                    <span id="sound-icon">🔊</span>
+            <!-- Mode Selector Buttons -->
+            <div class="flex bg-slate-900/80 p-1.5 rounded-2xl border border-white/20 gap-1.5 font-display text-sm">
+                <button id="nav-mode-1d" onclick="setMode('1d')" class="px-4 py-2 rounded-xl transition-all flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg font-bold">
+                    <i class="fa-solid fa-route"></i> Vector Line
                 </button>
-                <button onclick="showTab('settings')" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all border border-slate-700" title="Settings">
-                    ⚙️
+                <button id="nav-mode-chips" onclick="setMode('chips')" class="px-4 py-2 rounded-xl transition-all flex items-center gap-2 text-purple-200 hover:text-white font-bold">
+                    <i class="fa-solid fa-bolt"></i> Zero-Pair Lab
+                </button>
+                <button id="nav-mode-game" onclick="setMode('game')" class="px-4 py-2 rounded-xl transition-all flex items-center gap-2 text-yellow-300 hover:text-white font-bold bg-amber-500/20 border border-amber-400/30">
+                    <i class="fa-solid fa-trophy"></i> Arcade Quest
+                </button>
+            </div>
+
+            <!-- Audio & Controls -->
+            <div class="flex items-center gap-3">
+                <button id="sound-toggle" onclick="toggleSound()" class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-yellow-300 border border-white/20 transition flex items-center gap-2 font-display text-sm font-bold shadow-md">
+                    <i id="sound-icon" class="fa-solid fa-volume-high text-lg"></i>
+                    <span id="sound-text">SFX ON</span>
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- MAIN NAVIGATION TABS -->
-    <div class="bg-slate-900/60 border-b border-slate-800 px-4 py-2 no-print">
-        <div class="max-w-4xl mx-auto flex items-center justify-around sm:justify-center sm:gap-6 text-xs sm:text-sm font-semibold">
-            <button onclick="showTab('home')" class="nav-tab text-brand-blue border-b-2 border-brand-blue px-3 py-2 flex items-center gap-2 transition-all" id="tab-home">
-                🏠 Home
-            </button>
-            <button onclick="showTab('jump')" class="nav-tab text-slate-400 hover:text-slate-200 px-3 py-2 flex items-center gap-2 transition-all" id="tab-jump">
-                🛣️ Number Line
-            </button>
-            <button onclick="showTab('chips')" class="nav-tab text-slate-400 hover:text-slate-200 px-3 py-2 flex items-center gap-2 transition-all" id="tab-chips">
-                ⚪ Get My Pairs
-            </button>
-            <button onclick="showTab('speed')" class="nav-tab text-slate-400 hover:text-slate-200 px-3 py-2 flex items-center gap-2 transition-all" id="tab-speed">
-                ⚡ Speed Run
-            </button>
-            <button onclick="showTab('realworld')" class="nav-tab text-slate-400 hover:text-slate-200 px-3 py-2 flex items-center gap-2 transition-all" id="tab-realworld">
-                🌏 Real World
-            </button>
-            <button onclick="showTab('settings')" class="nav-tab text-slate-400 hover:text-slate-200 px-3 py-2 flex items-center gap-2 transition-all" id="tab-settings">
-                ⚙️ Settings
-            </button>
-        </div>
-    </div>
+    <!-- MAIN DASHBOARD -->
+    <main class="relative z-10 max-w-7xl mx-auto w-full p-4 flex-1 flex flex-col gap-4">
 
-    <!-- MAIN CONTENT -->
-    <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full">
-
-        <!-- ================= 1. HOME HUB VIEW ================= -->
-        <section id="view-home" class="tab-view space-y-8 animate-pop">
-            <!-- Hero Banner -->
-            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-brand-blue/30 via-brand-purple/20 to-slate-900 border border-slate-700/80 p-6 sm:p-10">
-                <div class="relative z-10 max-w-2xl space-y-4">
-                    <span class="inline-block px-3 py-1 rounded-full bg-brand-blue/20 text-brand-blue text-xs font-bold uppercase tracking-wider border border-brand-blue/30">
-                        Web-Based & 100% Offline Device
+        <!-- DISPLAY BAR & REALTIME EXPRESSION -->
+        <div class="glass-card-dark rounded-3xl p-4 border border-white/20 shadow-2xl flex flex-wrap items-center justify-between gap-4 text-white">
+            
+            <!-- Live Equation Display -->
+            <div class="bg-slate-950/80 border border-purple-500/40 rounded-2xl p-4 flex-1 min-w-[280px] flex items-center justify-between shadow-inner">
+                <div>
+                    <span class="text-xs font-display text-cyan-400 font-bold tracking-wider uppercase block mb-1">
+                        <i class="fa-solid fa-calculator"></i> Active Equation
                     </span>
-                    <h2 class="text-3xl sm:text-5xl font-extrabold text-white leading-tight">
-                        IntegerQuest
-                    </h2>
-                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
-                        Master positive and negative numbers offline through visual number line walks, interactive chip pairing workspaces, flashcard speed runs, and Philippine Peso real-world math applications!
-                    </p>
+                    <div id="display-expression" class="font-display font-extrabold text-3xl md:text-4xl text-yellow-300 drop-shadow">
+                        (+5) + (-3) = +2
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="text-xs font-display text-pink-400 font-bold tracking-wider uppercase block mb-1">
+                        Net Output
+                    </span>
+                    <div id="display-result" class="font-display font-black text-3xl md:text-4xl text-emerald-400 drop-shadow">
+                        +2
+                    </div>
+                </div>
+            </div>
 
-                    <!-- Student Name Quick Input Bar on Home -->
-                    <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-700/80 max-w-md space-y-2">
-                        <label for="home-student-name" class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Learner Name (For Certificate):</label>
-                        <div class="flex gap-2">
-                            <input type="text" id="home-student-name" placeholder="e.g. Juan Cruz" oninput="saveStudentName(this.value)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm font-bold text-white focus:outline-none focus:border-brand-purple">
-                            <button onclick="saveStudentName(document.getElementById('home-student-name').value)" class="px-4 bg-brand-purple hover:bg-purple-600 text-white font-bold rounded-xl text-xs transition-all">
-                                Save
+            <!-- Absolute Value Badges -->
+            <div class="flex gap-3 min-w-[260px]">
+                <div class="flex-1 bg-purple-950/60 border border-purple-400/30 p-3 rounded-2xl text-center shadow">
+                    <span class="text-[11px] font-bold text-purple-300 uppercase block font-display">Vector |A| Distance</span>
+                    <span id="display-abs-a" class="font-display font-extrabold text-xl text-cyan-300">|5| = 5 units</span>
+                </div>
+                <div class="flex-1 bg-pink-950/60 border border-pink-400/30 p-3 rounded-2xl text-center shadow">
+                    <span class="text-[11px] font-bold text-pink-300 uppercase block font-display">Vector |B| Distance</span>
+                    <span id="display-abs-b" class="font-display font-extrabold text-xl text-pink-300">|-3| = 3 units</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN INTERACTIVE WORKSPACE -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1">
+            
+            <!-- LEFT INPUT & HARDWARE DIALS PANEL (4 Cols) -->
+            <div class="lg:col-span-4 glass-card rounded-3xl p-5 shadow-2xl flex flex-col justify-between gap-5 border border-white">
+                <div>
+                    <!-- Header -->
+                    <div class="flex items-center justify-between border-b-2 border-slate-200/80 pb-3 mb-4">
+                        <h2 class="font-display font-extrabold text-slate-800 text-lg uppercase flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-purple-600"></i> Math Device Controls
+                        </h2>
+                        <span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 font-bold text-xs rounded-full flex items-center gap-1 font-display">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span> Live Signal
+                        </span>
+                    </div>
+
+                    <!-- Operator Selector Buttons -->
+                    <div class="mb-5">
+                        <label class="text-xs font-display font-bold text-slate-600 block mb-2 uppercase tracking-wide">
+                            Choose Math Operation
+                        </label>
+                        <div class="grid grid-cols-4 gap-2 bg-slate-200/80 p-2 rounded-2xl">
+                            <button onclick="setOperator('+')" id="op-add" class="op-btn py-2.5 rounded-xl font-display font-black text-2xl bg-gradient-to-r from-emerald-400 to-teal-500 text-white shadow-md transition transform active:scale-95">
+                                +
+                            </button>
+                            <button onclick="setOperator('-')" id="op-sub" class="op-btn py-2.5 rounded-xl font-display font-black text-2xl text-slate-600 hover:bg-white transition transform active:scale-95">
+                                −
+                            </button>
+                            <button onclick="setOperator('×')" id="op-mul" class="op-btn py-2.5 rounded-xl font-display font-black text-2xl text-slate-600 hover:bg-white transition transform active:scale-95">
+                                ×
+                            </button>
+                            <button onclick="setOperator('÷')" id="op-div" class="op-btn py-2.5 rounded-xl font-display font-black text-2xl text-slate-600 hover:bg-white transition transform active:scale-95">
+                                ÷
                             </button>
                         </div>
                     </div>
 
-                    <div class="pt-2 flex flex-wrap gap-3">
-                        <button onclick="showTab('jump')" class="px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold shadow-lg shadow-emerald-500/25 transition-all flex items-center gap-2">
-                            ▶️ Start Quest
-                        </button>
-                        <button onclick="openCertificateModalManual()" class="px-6 py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-purple-300 border border-purple-500/30 font-bold transition-all flex items-center gap-2">
-                            🏆 View E-Certificate
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Game Mode Cards Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Card 1 -->
-                <div onclick="showTab('jump')" class="group relative rounded-2xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 p-6 cursor-pointer transition-all hover:-translate-y-1 hover:border-emerald-500/50 hover:shadow-xl flex flex-col justify-between">
-                    <div class="space-y-4">
-                        <div class="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-2xl font-bold group-hover:scale-110 transition-transform">
-                            🛣️
+                    <!-- Input Integer A Slider -->
+                    <div class="mb-4 bg-purple-50 p-4 rounded-2xl border-2 border-purple-200/70 shadow-sm">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-display font-bold text-purple-900 uppercase">Integer A (Start Point)</span>
+                            <span id="val-a-badge" class="font-display font-black text-lg px-3 py-0.5 rounded-xl bg-emerald-500 text-white shadow">
+                                +5
+                            </span>
                         </div>
-                        <h3 class="text-xl font-bold text-white">Number Line Walk</h3>
-                        <p class="text-xs text-slate-400 leading-relaxed">
-                            Watch the animated student figure walk forward and backward along the number line to evaluate integer expressions.
-                        </p>
-                    </div>
-                    <div class="mt-6 flex items-center text-xs font-bold text-emerald-400 gap-2">
-                        <span>Explore</span> ➡️
-                    </div>
-                </div>
-
-                <!-- Card 2 -->
-                <div onclick="showTab('chips')" class="group relative rounded-2xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 p-6 cursor-pointer transition-all hover:-translate-y-1 hover:border-blue-500/50 hover:shadow-xl flex flex-col justify-between">
-                    <div class="space-y-4">
-                        <div class="w-12 h-12 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-2xl font-bold group-hover:scale-110 transition-transform">
-                            ⚪
+                        <div class="flex items-center gap-3">
+                            <button onclick="adjustVal('a', -1)" class="w-10 h-10 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-display font-black text-xl shadow active:scale-95 transition flex items-center justify-center">-</button>
+                            <input type="range" id="slider-a" min="-12" max="12" value="5" oninput="updateFromInputs()" class="w-full accent-purple-600 cursor-pointer h-3 bg-purple-200 rounded-lg">
+                            <button onclick="adjustVal('a', 1)" class="w-10 h-10 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-display font-black text-xl shadow active:scale-95 transition flex items-center justify-center">+</button>
                         </div>
-                        <h3 class="text-xl font-bold text-white">Get My Pairs</h3>
-                        <p class="text-xs text-slate-400 leading-relaxed">
-                            Drag positive and negative chips into appropriate work areas, flip signs, and verify zero pairs!
-                        </p>
                     </div>
-                    <div class="mt-6 flex items-center text-xs font-bold text-blue-400 gap-2">
-                        <span>Explore</span> ➡️
-                    </div>
-                </div>
 
-                <!-- Card 3 -->
-                <div onclick="showTab('speed')" class="group relative rounded-2xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 p-6 cursor-pointer transition-all hover:-translate-y-1 hover:border-amber-500/50 hover:shadow-xl flex flex-col justify-between">
-                    <div class="space-y-4">
-                        <div class="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-2xl font-bold group-hover:scale-110 transition-transform">
-                            ⚡
+                    <!-- Input Integer B Slider -->
+                    <div class="mb-5 bg-pink-50 p-4 rounded-2xl border-2 border-pink-200/70 shadow-sm">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-display font-bold text-pink-900 uppercase">Integer B (Move Vector)</span>
+                            <span id="val-b-badge" class="font-display font-black text-lg px-3 py-0.5 rounded-xl bg-rose-500 text-white shadow">
+                                -3
+                            </span>
                         </div>
-                        <h3 class="text-xl font-bold text-white">Speed Run</h3>
-                        <p class="text-xs text-slate-400 leading-relaxed">
-                            Solve rapid integer flashcards under customizable timer constraints to build math reflex speed.
-                        </p>
-                    </div>
-                    <div class="mt-6 flex items-center text-xs font-bold text-amber-400 gap-2">
-                        <span>Explore</span> ➡️
-                    </div>
-                </div>
-
-                <!-- Card 4 -->
-                <div onclick="showTab('realworld')" class="group relative rounded-2xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 p-6 cursor-pointer transition-all hover:-translate-y-1 hover:border-purple-500/50 hover:shadow-xl flex flex-col justify-between">
-                    <div class="space-y-4">
-                        <div class="w-12 h-12 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-2xl font-bold group-hover:scale-110 transition-transform">
-                            🌏
+                        <div class="flex items-center gap-3">
+                            <button onclick="adjustVal('b', -1)" class="w-10 h-10 rounded-xl bg-pink-600 hover:bg-pink-700 text-white font-display font-black text-xl shadow active:scale-95 transition flex items-center justify-center">-</button>
+                            <input type="range" id="slider-b" min="-12" max="12" value="-3" oninput="updateFromInputs()" class="w-full accent-pink-600 cursor-pointer h-3 bg-pink-200 rounded-lg">
+                            <button onclick="adjustVal('b', 1)" class="w-10 h-10 rounded-xl bg-pink-600 hover:bg-pink-700 text-white font-display font-black text-xl shadow active:scale-95 transition flex items-center justify-center">+</button>
                         </div>
-                        <h3 class="text-xl font-bold text-white">Real-World Quests</h3>
-                        <p class="text-xs text-slate-400 leading-relaxed">
-                            Apply integers to Philippine Peso (₱) finances, mountain elevations, and thermometer shifts.
-                        </p>
                     </div>
-                    <div class="mt-6 flex items-center text-xs font-bold text-purple-400 gap-2">
-                        <span>Explore</span> ➡️
-                    </div>
-                </div>
-            </div>
-        </section>
 
-
-        <!-- ================= 2. NUMBER LINE WALK ================= -->
-        <section id="view-jump" class="tab-view space-y-6 hidden">
-            <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-6 shadow-xl">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                    <!-- Quick Preset Buttons -->
                     <div>
-                        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
-                            🛣️ Interactive Number Line
-                        </h2>
-                        <p class="text-xs text-slate-400">Watch the student figure walk step-by-step or enter your answer!</p>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <span id="jump-score-tag" class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xs border border-emerald-500/30">
-                            Streak: 0
+                        <span class="text-xs font-display font-bold text-slate-500 block mb-2 uppercase tracking-wide">
+                            ⚡ Quick Math Demos
                         </span>
-                        <button onclick="generateJumpProblem()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-xs font-semibold text-slate-200 transition-all flex items-center gap-1.5">
-                            🔄 New Problem
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Equation Display Box -->
-                <div class="bg-slate-900/90 rounded-2xl p-6 text-center border border-slate-800 shadow-inner mb-8">
-                    <p class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Integer Expression</p>
-                    <div id="jump-equation" class="text-3xl sm:text-5xl font-extrabold text-white tracking-wide">
-                        0 + 0 = ?
-                    </div>
-                    <p id="jump-explanation" class="text-sm text-slate-400 mt-2 h-6">Start at 0...</p>
-                </div>
-
-                <!-- VISUAL NUMBER LINE CANVAS CONTAINER -->
-                <div class="relative bg-slate-950 rounded-2xl p-4 sm:p-8 border border-slate-800 overflow-hidden mb-6">
-                    <!-- Ticks & Marker Container -->
-                    <div class="relative w-full h-36 flex items-center">
-                        <!-- Horizontal Axis Line -->
-                        <div class="absolute w-full h-1.5 bg-slate-700 rounded-full"></div>
-                        <!-- Center Zero Marker -->
-                        <div class="absolute left-1/2 -translate-x-1/2 w-3 h-8 bg-brand-purple/50 rounded-full -z-0"></div>
-                        
-                        <!-- Ticks populated dynamically -->
-                        <div id="number-line-ticks" class="relative w-full flex justify-between items-center z-10 px-4"></div>
-
-                        <!-- STUDENT FIGURE AVATAR (SVG VECTOR) -->
-                        <div id="jumper-marker" class="absolute top-2 transition-all duration-500 ease-out z-20 -translate-x-1/2 flex flex-col items-center">
-                            <div class="w-12 h-12 flex items-center justify-center bg-brand-purple border-2 border-white rounded-full shadow-lg shadow-purple-500/50 p-1">
-                                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
-                                    <circle cx="32" cy="22" r="12" fill="#FDE047"/>
-                                    <path d="M16 16L32 8L48 16L32 24L16 16Z" fill="#3B82F6"/>
-                                    <rect x="28" y="10" width="8" height="4" fill="#1D4ED8"/>
-                                    <path d="M44 16V24" stroke="#F59E0B" stroke-width="2"/>
-                                    <circle cx="28" cy="22" r="1.5" fill="#1E293B"/>
-                                    <circle cx="36" cy="22" r="1.5" fill="#1E293B"/>
-                                    <path d="M28 26C30 28 34 28 36 26" stroke="#1E293B" stroke-width="1.5" stroke-linecap="round"/>
-                                    <path d="M20 40C20 32 44 32 44 40V54H20V40Z" fill="#8B5CF6"/>
-                                    <rect x="26" y="38" width="12" height="12" fill="#6D28D9" rx="2"/>
-                                </svg>
-                            </div>
-                            <span id="jumper-val-badge" class="mt-1 px-2 py-0.5 rounded-md bg-slate-900 text-emerald-400 text-xs font-bold border border-emerald-500/30">0</span>
+                        <div class="grid grid-cols-2 gap-2 text-xs font-display">
+                            <button onclick="loadPreset(-4, -5, '+')" class="p-2.5 bg-slate-100 hover:bg-purple-100 border border-slate-300 rounded-xl font-bold text-slate-700 transition text-left">
+                                🔹 (-4) + (-5) [Add Negative]
+                            </button>
+                            <button onclick="loadPreset(6, -6, '+')" class="p-2.5 bg-slate-100 hover:bg-purple-100 border border-slate-300 rounded-xl font-bold text-slate-700 transition text-left">
+                                🔸 (+6) + (-6) [Zero Pair]
+                            </button>
+                            <button onclick="loadPreset(3, -4, '-')" class="p-2.5 bg-slate-100 hover:bg-purple-100 border border-slate-300 rounded-xl font-bold text-slate-700 transition text-left">
+                                🔹 (+3) − (-4) [Double Neg]
+                            </button>
+                            <button onclick="loadPreset(-3, 3, '×')" class="p-2.5 bg-slate-100 hover:bg-purple-100 border border-slate-300 rounded-xl font-bold text-slate-700 transition text-left">
+                                🔸 (-3) × (+3) [Sign Flip]
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Interactive Controls -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <button onclick="animateJumpSteps()" class="w-full py-3 bg-brand-blue hover:bg-blue-600 text-white font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 text-sm">
-                        🚶 Step-by-Step Walk
-                    </button>
-                    <div class="flex items-center gap-2">
-                        <input type="number" id="jump-user-input" placeholder="Your Answer" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-center text-white font-bold text-lg focus:outline-none focus:border-emerald-500 transition-all">
-                        <button onclick="checkJumpAnswer()" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow-lg transition-all text-sm">
-                            Submit
-                        </button>
-                    </div>
-                </div>
-
-                <div id="jump-feedback" class="mt-4 text-center font-bold text-sm min-h-[24px]"></div>
+                <!-- Reset Device Controls -->
+                <button onclick="resetValues()" class="w-full py-3 bg-slate-800 hover:bg-slate-900 text-white rounded-2xl font-display font-extrabold text-sm transition shadow-lg flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-rotate-left text-yellow-400"></i> Reset Device Inputs
+                </button>
             </div>
-        </section>
 
-
-        <!-- ================= 3. GET MY PAIRS (ZERO PAIR WORKSPACE) ================= -->
-        <section id="view-chips" class="tab-view space-y-6 hidden">
-            <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-6 shadow-xl">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-                    <div>
-                        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
-                            ⚪ Get My Pairs
-                        </h2>
-                        <p class="text-xs text-slate-400">Add white (+) and black (-) chips to represent the expression, then pair them up to find the result!</p>
-                    </div>
-                    <button onclick="generatePairProblem()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-xs font-semibold text-slate-200 transition-all flex items-center gap-1.5 self-start md:self-auto">
-                        🔄 New Question
-                    </button>
-                </div>
-
-                <!-- Problem Target Banner -->
-                <div class="bg-slate-900/90 rounded-2xl p-4 text-center border border-slate-800 mb-6">
-                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Target Equation</p>
-                    <div id="pair-target-text" class="text-2xl sm:text-4xl font-extrabold text-white">
-                        (2) - (5) = ?
-                    </div>
-                    <p class="text-xs text-slate-400 mt-1">Represent the numbers with chips in the workspace below!</p>
-                </div>
-
-                <!-- CHIP SUPPLY / DRAWERS -->
-                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-700 mb-6 flex flex-wrap items-center justify-between gap-4">
-                    <div class="flex items-center gap-3">
-                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Chip Drawers:</span>
-                        <!-- White Chip Drawer -->
-                        <div draggable="true" ondragstart="handleChipDragStart(event, 'pos')" onclick="addChipToWork('pos')" class="px-4 py-2.5 rounded-xl chip-pos font-extrabold text-xs flex items-center gap-2 cursor-grab active:cursor-grabbing hover:scale-105 transition-transform">
-                            <span class="w-5 h-5 rounded-full bg-slate-900 text-white flex items-center justify-center text-[10px]">+</span>
-                            White Chip (+1)
-                        </div>
-                        <!-- Black Chip Drawer -->
-                        <div draggable="true" ondragstart="handleChipDragStart(event, 'neg')" onclick="addChipToWork('neg')" class="px-4 py-2.5 rounded-xl chip-neg font-extrabold text-xs flex items-center gap-2 cursor-grab active:cursor-grabbing hover:scale-105 transition-transform">
-                            <span class="w-5 h-5 rounded-full bg-white text-slate-900 flex items-center justify-center text-[10px]">-</span>
-                            Black Chip (-1)
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-2">
-                        <span class="text-[11px] text-slate-400 italic">Drag onto canvas or tap drawers to add chips!</span>
-                    </div>
-                </div>
-
-                <!-- UNIFIED DRAG AND DROP WORKSPACE CANVAS -->
-                <div id="pair-canvas-workspace" 
-                     ondragover="handleCanvasDragOver(event)" 
-                     ondrop="handleCanvasDrop(event)"
-                     class="bg-slate-950/90 rounded-2xl p-6 border-2 border-dashed border-slate-700 flex flex-col justify-between min-h-[260px] relative overflow-hidden">
-                    
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                            🎨 Chip Workspace Area
-                        </span>
-                        <div class="flex gap-4 text-xs font-bold">
-                            <span class="text-slate-200">White (+): <span id="canvas-pos-count" class="text-emerald-400">0</span></span>
-                            <span class="text-slate-400">Black (-): <span id="canvas-neg-count" class="text-red-400">0</span></span>
-                        </div>
-                    </div>
-
-                    <!-- Chips Container -->
-                    <div id="canvas-chips-grid" class="flex-1 flex flex-wrap gap-3 p-4 items-center justify-center min-h-[160px]">
-                        <!-- Dynamically populated chips -->
-                    </div>
-
-                    <p class="text-[11px] text-center text-slate-500 italic mt-2">Click any chip in workspace to remove it individually.</p>
-                </div>
-
-                <!-- Action Controls & Status Bar -->
-                <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-900 p-4 rounded-xl border border-slate-800">
-                    <div>
-                        <p id="pair-summary-status" class="text-sm font-semibold text-slate-300">
-                            Total Chips in Canvas: <span id="current-total-chips" class="font-bold text-brand-blue">0</span> 
-                            (White: <span id="summary-pos" class="text-white font-bold">0</span> | Black: <span id="summary-neg" class="text-slate-400 font-bold">0</span>)
-                        </p>
-                    </div>
-                    <div class="flex items-center gap-3 w-full sm:w-auto">
-                        <button onclick="clearWorkAreas()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition-all border border-slate-700">
-                            Clear Canvas
-                        </button>
-                        <button id="check-pairs-btn" onclick="checkAndPairUp()" class="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-all shadow-lg flex items-center justify-center gap-2">
-                            ✨ Check / Pair Up
-                        </button>
-                    </div>
-                </div>
-
-                <div id="pair-feedback" class="mt-3 text-center font-bold text-sm min-h-[28px]"></div>
-            </div>
-        </section>
-
-
-        <!-- ================= 4. SPEED RUN ================= -->
-        <section id="view-speed" class="tab-view space-y-6 hidden">
-            <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-6 shadow-xl relative overflow-hidden">
+            <!-- RIGHT VISUALIZER WORKSPACE & MASCOT (8 Cols) -->
+            <div class="lg:col-span-8 flex flex-col gap-4">
                 
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                    <div>
-                        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
-                            ⚡ Speed Run Flashcards
-                        </h2>
-                        <p class="text-xs text-slate-400">Solve integer flashcards as quickly as possible before time expires!</p>
+                <!-- MASCOT CHAT BANNER -->
+                <div class="glass-card rounded-3xl p-4 shadow-xl border border-white flex items-center gap-4 bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-amber-500/10">
+                    <!-- Mascot Image -->
+                    <div class="relative shrink-0">
+                        <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-yellow-400 to-pink-500 p-1 shadow-lg animate-mascot">
+                            <img src="watermarked_img_12815739409719632981.jpg" alt="Grade 7 Math Mascot Guide" class="w-full h-full object-cover rounded-xl bg-white" onerror="this.onerror=null; this.src='https://placehold.co/100x100/8b5cf6/ffffff?text=Math+Hero';">
+                        </div>
+                        <span class="absolute -bottom-1 -right-1 bg-yellow-400 text-slate-950 font-black text-[10px] px-2 py-0.5 rounded-full font-display shadow">
+                            HERO GUIDE
+                        </span>
+                    </div>
+
+                    <!-- Mascot Speech Bubble -->
+                    <div class="relative flex-1 bg-white p-3.5 rounded-2xl rounded-tl-none border-2 border-purple-200 shadow-md">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="font-display font-extrabold text-purple-700 text-xs uppercase tracking-wider">
+                                Math Hero Coach Says:
+                            </span>
+                            <span class="text-xs text-yellow-500 font-bold font-display">★ LEVEL 7 MASTER</span>
+                        </div>
+                        <p id="mascot-speech" class="text-sm font-semibold text-slate-700 leading-snug">
+                            "Hey Math Hero! Moving right is positive (+), and moving left is negative (-). Let's explore!"
+                        </p>
                     </div>
                 </div>
 
-                <!-- Timer Bar -->
-                <div class="grid grid-cols-3 gap-4 mb-6 text-center">
-                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
-                        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Timer</p>
-                        <p id="speed-timer" class="text-2xl font-extrabold text-amber-400">30s</p>
-                    </div>
-                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
-                        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Score</p>
-                        <p id="speed-score" class="text-2xl font-extrabold text-emerald-400">0</p>
-                    </div>
-                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
-                        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Streak</p>
-                        <p id="speed-streak" class="text-2xl font-extrabold text-purple-400">0</p>
-                    </div>
-                </div>
-
-                <!-- Active Game Screen -->
-                <div id="speed-game-box" class="bg-slate-900 rounded-3xl p-8 text-center border-2 border-slate-700 shadow-2xl relative min-h-[220px] flex flex-col justify-center items-center">
-                    <div id="speed-pregame" class="space-y-4">
-                        <div class="text-5xl animate-pulse">⏱️</div>
-                        <h3 class="text-2xl font-bold text-white">Ready for Speed Run?</h3>
-                        <p class="text-xs text-slate-400 max-w-sm mx-auto">Build mathematical fluency across integer arithmetic!</p>
-                        <button onclick="startSpeedRun()" class="px-8 py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-extrabold rounded-2xl shadow-xl text-base transition-all transform hover:scale-105">
-                            ▶️ START SPRINT
-                        </button>
+                <!-- MAIN DISPLAY CANVAS / INTERACTIVE ENGINE -->
+                <div class="glass-card-dark rounded-3xl p-5 shadow-2xl border border-white/20 flex-1 flex flex-col justify-between relative overflow-hidden min-h-[380px]">
+                    
+                    <!-- Mode Header Title -->
+                    <div class="flex items-center justify-between mb-3 relative z-10 text-white">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3.5 h-3.5 rounded-full bg-cyan-400 animate-ping"></span>
+                            <h3 id="workspace-title" class="font-display font-extrabold text-lg tracking-wide text-yellow-300">
+                                VECTOR NUMBER LINE ADVENTURE
+                            </h3>
+                        </div>
+                        <span id="workspace-subtitle" class="text-xs font-display font-bold px-3 py-1 bg-white/10 rounded-full border border-white/20">
+                            Directional Displacement Mode
+                        </span>
                     </div>
 
-                    <div id="speed-active-card" class="space-y-6 hidden w-full">
-                        <div id="speed-flash-card" class="text-4xl sm:text-6xl font-extrabold text-white tracking-wider animate-pop">
-                            (-7) × (-6)
+                    <!-- VISUAL CANVAS CONTAINER -->
+                    <div class="relative w-full h-[280px] bg-slate-950/90 rounded-2xl border border-white/10 overflow-hidden flex items-center justify-center">
+                        
+                        <!-- Mode 1: Canvas Vector Engine -->
+                        <canvas id="vectorCanvas" class="w-full h-full block"></canvas>
+
+                        <!-- Mode 2: Magic Zero-Pair Particle Counter -->
+                        <div id="chipsContainer" class="hidden absolute inset-0 p-5 flex flex-col justify-between bg-slate-950/95 overflow-y-auto">
+                            <div class="grid grid-cols-2 gap-4 flex-1">
+                                <!-- Positive Charge (+ Battery Particles) -->
+                                <div class="bg-cyan-950/40 border-2 border-cyan-500/40 rounded-2xl p-3 flex flex-col">
+                                    <div class="flex justify-between items-center mb-2 font-display">
+                                        <span class="text-xs font-bold text-cyan-300 flex items-center gap-1.5">
+                                            <i class="fa-solid fa-battery-full text-cyan-400"></i> POSITIVE (+) CHARGES
+                                        </span>
+                                        <span id="pos-count-tag" class="text-sm font-black px-2 py-0.5 bg-cyan-500 text-slate-950 rounded-lg">0</span>
+                                    </div>
+                                    <div id="pos-chips" class="flex flex-wrap gap-2.5 p-2 overflow-y-auto flex-1 align-content-start"></div>
+                                </div>
+
+                                <!-- Negative Charge (- Fire Particles) -->
+                                <div class="bg-rose-950/40 border-2 border-rose-500/40 rounded-2xl p-3 flex flex-col">
+                                    <div class="flex justify-between items-center mb-2 font-display">
+                                        <span class="text-xs font-bold text-rose-300 flex items-center gap-1.5">
+                                            <i class="fa-solid fa-fire-flame-curved text-rose-400"></i> NEGATIVE (−) CHARGES
+                                        </span>
+                                        <span id="neg-count-tag" class="text-sm font-black px-2 py-0.5 bg-rose-500 text-white rounded-lg">0</span>
+                                    </div>
+                                    <div id="neg-chips" class="flex flex-wrap gap-2.5 p-2 overflow-y-auto flex-1 align-content-start"></div>
+                                </div>
+                            </div>
+
+                            <!-- Zero Pair Cancellation Summary Banner -->
+                            <div id="zero-pair-summary" class="mt-3 bg-gradient-to-r from-purple-900 to-indigo-900 border border-purple-400/40 p-3 rounded-xl text-center text-xs font-display font-bold text-yellow-300 shadow">
+                                ⚡ Zero-Pairs Neutralized: 0 (+1 & -1 cancel out to 0!)
+                            </div>
                         </div>
 
-                        <div class="max-w-xs mx-auto space-y-3">
-                            <form onsubmit="submitSpeedAnswer(event)" class="flex gap-2">
-                                <input type="number" id="speed-input" placeholder="Result" class="w-full bg-slate-950 border-2 border-amber-500/50 rounded-xl px-4 py-3 text-center text-white font-extrabold text-2xl focus:outline-none focus:border-amber-400" autofocus>
-                                <button type="submit" class="px-6 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-lg">
-                                    ➡️
+                        <!-- Mode 3: Gamified Arcade Quest Center -->
+                        <div id="gameContainer" class="hidden absolute inset-0 p-5 flex flex-col justify-between bg-slate-950 text-white">
+                            <!-- Arcade Header -->
+                            <div class="flex justify-between items-center border-b border-white/10 pb-3">
+                                <div>
+                                    <span class="text-xs font-display font-extrabold text-yellow-400 uppercase tracking-widest block">
+                                        ★ INTEGER HERO CHALLENGE ★
+                                    </span>
+                                    <h4 id="game-title" class="text-lg font-display font-black text-cyan-300">Target Lock Challenge</h4>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="bg-purple-900/80 px-3.5 py-1.5 rounded-xl border border-purple-400/40 text-right font-display">
+                                        <span class="text-[10px] text-purple-300 block font-bold">HERO SCORE</span>
+                                        <span id="game-score" class="font-black text-xl text-yellow-300">000</span>
+                                    </div>
+                                    <div class="bg-amber-500/20 px-3 py-1.5 rounded-xl border border-amber-400/40 text-center font-display">
+                                        <span class="text-[10px] text-amber-300 block font-bold">STREAK</span>
+                                        <span id="game-streak" class="font-black text-xl text-amber-400">🔥 x0</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Game Prompt Box -->
+                            <div class="my-auto text-center py-2">
+                                <span class="text-xs font-display font-bold text-purple-300 uppercase block mb-1">YOUR MATH FAIR GOAL</span>
+                                <div id="game-prompt" class="text-3xl font-display font-black text-yellow-300 drop-shadow mb-3">
+                                    Adjust inputs to reach target: +8
+                                </div>
+                                <div id="game-status" class="text-sm font-display font-bold text-slate-300">
+                                    Use the controls on the left to match the device output!
+                                </div>
+                            </div>
+
+                            <!-- Arcade Action Buttons -->
+                            <div class="flex gap-3 font-display">
+                                <button onclick="submitChallenge()" class="flex-1 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 font-black text-white rounded-xl shadow-lg transition transform active:scale-95 text-sm flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-circle-check text-lg"></i> VERIFY DEVICE OUTPUT
                                 </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-
-        <!-- ================= 5. REAL-WORLD SCENARIOS (PHILIPPINE PESO ₱) ================= -->
-        <section id="view-realworld" class="tab-view space-y-6 hidden">
-            <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-6 shadow-xl">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                    <div>
-                        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
-                            🌏 Real-World Quests
-                        </h2>
-                        <p class="text-xs text-slate-400">Apply integer rules to local contexts using Philippine Pesos (₱) and environmental measurements.</p>
-                    </div>
-                    <button onclick="generateRealWorldQuest()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-xs font-semibold text-slate-200 transition-all flex items-center gap-1.5 self-start sm:self-auto">
-                        🔀 Next Quest
-                    </button>
-                </div>
-
-                <!-- Scenario Card -->
-                <div id="realworld-card" class="bg-slate-900 border border-slate-700 rounded-2xl p-6 space-y-4">
-                    <div class="flex items-center justify-between">
-                        <span id="rw-category-badge" class="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 font-bold text-xs border border-purple-500/30 flex items-center gap-1.5">
-                            ₱ Finance (₱)
-                        </span>
-                        <span id="rw-difficulty" class="text-xs text-slate-400 font-bold">Standard Quest</span>
-                    </div>
-
-                    <p id="rw-story-text" class="text-base sm:text-lg text-slate-200 leading-relaxed font-medium">
-                        Loading scenario...
-                    </p>
-
-                    <!-- Context Visual Graphic -->
-                    <div id="rw-visual-box" class="bg-slate-950 rounded-xl p-4 flex items-center justify-center min-h-[100px] border border-slate-800 text-slate-300 text-sm font-semibold">
-                        <!-- Dynamic Visual -->
-                    </div>
-
-                    <!-- Options -->
-                    <div id="rw-options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2"></div>
-                </div>
-
-                <div id="rw-feedback" class="mt-4 text-center font-bold text-sm min-h-[24px]"></div>
-            </div>
-        </section>
-
-
-        <!-- ================= 6. SETTINGS & CUSTOMIZATION ================= -->
-        <section id="view-settings" class="tab-view space-y-6 hidden">
-            <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-6 shadow-xl">
-                <div class="border-b border-slate-700 pb-4 mb-6">
-                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
-                        ⚙️ Settings & Customization
-                    </h2>
-                    <p class="text-xs text-slate-400">Tailor integer number ranges, enabled arithmetic operations, and timer speeds.</p>
-                </div>
-
-                <div class="space-y-6 max-w-2xl">
-                    <!-- Student Name -->
-                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-2">
-                        <label class="block text-xs font-bold text-slate-300 uppercase">Student / Learner Full Name</label>
-                        <input type="text" id="cfg-student-name" placeholder="Enter Full Name" oninput="saveStudentName(this.value)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-white font-bold text-sm focus:outline-none focus:border-brand-purple">
-                        <p class="text-[11px] text-slate-500">This name will appear on your Math Fair Certificate of Achievement.</p>
-                    </div>
-
-                    <!-- Number Range (Min & Max) -->
-                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3">
-                        <label class="block text-xs font-bold text-slate-300 uppercase">Number Range Bounds</label>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label for="cfg-range-min" class="block text-[11px] text-slate-400 mb-1">Minimum Integer Limit</label>
-                                <input type="number" id="cfg-range-min" value="-10" min="-100" max="0" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold text-sm focus:outline-none focus:border-brand-blue">
-                            </div>
-                            <div>
-                                <label for="cfg-range-max" class="block text-[11px] text-slate-400 mb-1">Maximum Integer Limit</label>
-                                <input type="number" id="cfg-range-max" value="10" min="1" max="100" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold text-sm focus:outline-none focus:border-brand-blue">
+                                <button onclick="nextChallenge()" class="py-3 px-5 bg-white/10 hover:bg-white/20 font-bold text-purple-200 rounded-xl transition text-sm">
+                                    Next Prompt <i class="fa-solid fa-arrow-right"></i>
+                                </button>
                             </div>
                         </div>
-                        <p class="text-[11px] text-slate-500">Defines bounds for flashcards, problem generators, and number line bounds.</p>
+
                     </div>
 
-                    <!-- Operations Included -->
-                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3">
-                        <label class="block text-xs font-bold text-slate-300 uppercase">Included Arithmetic Operations</label>
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm font-bold">
-                            <label class="flex items-center gap-2 bg-slate-950 p-3 rounded-xl border border-slate-800 cursor-pointer">
-                                <input type="checkbox" id="op-chk-add" checked class="w-4 h-4 rounded accent-brand-purple"> Addition (+)
-                            </label>
-                            <label class="flex items-center gap-2 bg-slate-950 p-3 rounded-xl border border-slate-800 cursor-pointer">
-                                <input type="checkbox" id="op-chk-sub" checked class="w-4 h-4 rounded accent-brand-purple"> Subtraction (−)
-                            </label>
-                            <label class="flex items-center gap-2 bg-slate-950 p-3 rounded-xl border border-slate-800 cursor-pointer">
-                                <input type="checkbox" id="op-chk-mul" checked class="w-4 h-4 rounded accent-brand-purple"> Multiplication (×)
-                            </label>
-                            <label class="flex items-center gap-2 bg-slate-950 p-3 rounded-xl border border-slate-800 cursor-pointer">
-                                <input type="checkbox" id="op-chk-div" checked class="w-4 h-4 rounded accent-brand-purple"> Division (÷)
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Speed Run Timer -->
-                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-2">
-                        <label for="cfg-timer" class="block text-xs font-bold text-slate-300 uppercase">Speed Run Timer Duration (Seconds)</label>
-                        <select id="cfg-timer" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-white font-semibold text-sm">
-                            <option value="15">15 Seconds (Rapid)</option>
-                            <option value="30" selected>30 Seconds (Standard)</option>
-                            <option value="60">60 Seconds (Extended)</option>
-                            <option value="90">90 Seconds (Marathon)</option>
-                        </select>
-                    </div>
-
-                    <div class="pt-2 flex items-center gap-3">
-                        <button onclick="saveSettings()" class="px-6 py-3 bg-brand-purple hover:bg-purple-600 text-white font-bold rounded-xl text-sm shadow-lg transition-all flex items-center gap-2">
-                            💾 Save Settings
-                        </button>
-                        <span id="settings-save-msg" class="text-xs text-emerald-400 font-bold opacity-0 transition-opacity flex items-center gap-1">
-                            ✅ Settings saved & applied!
+                    <!-- STEP-BY-STEP CONCEPT BREAKDOWN FOOTER -->
+                    <div class="mt-3 bg-slate-900/90 border border-white/10 rounded-2xl p-3.5 text-white">
+                        <span class="text-xs font-display font-bold text-yellow-400 uppercase tracking-wider block mb-1 flex items-center gap-1.5">
+                            <i class="fa-solid fa-lightbulb text-amber-400"></i> Math Concept Explanation:
                         </span>
+                        <p id="pedagogical-text" class="text-xs font-sans text-slate-300 leading-relaxed font-medium">
+                            Starting at origin 0, move +5 units right, then move 3 units left (-3). You end up at +2.
+                        </p>
                     </div>
-                </div>
-            </div>
-        </section>
 
+                </div>
+
+            </div>
+        </div>
     </main>
 
-    <!-- AUTOMATIC CERTIFICATE POPUP MODAL -->
-    <div id="cert-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden no-print">
-        <div class="bg-slate-900 border-2 border-brand-purple rounded-3xl max-w-lg w-full p-6 text-center space-y-5 animate-pop shadow-2xl relative">
-            <button onclick="closeCertModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl">
-                ✖
-            </button>
-            <div class="w-16 h-16 rounded-full bg-amber-500/20 text-amber-400 mx-auto flex items-center justify-center text-3xl animate-bounce">
-                🏆
-            </div>
-            <h3 class="text-2xl font-bold text-white">Milestone Unlocked!</h3>
-            <p class="text-xs text-slate-300">
-                Congratulations! You achieved a cumulative score milestone of <span id="cert-milestone-score" class="text-amber-400 font-extrabold text-base">100</span> points!
-            </p>
-            <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-left text-xs space-y-1">
-                <p><strong class="text-slate-400">Awarded To:</strong> <span id="modal-student-name" class="text-white font-bold">Learner</span></p>
-                <p><strong class="text-slate-400">Event:</strong> IntegerQuest Math Fair</p>
-            </div>
-            <div class="flex gap-3 justify-center">
-                <button onclick="printCertificate()" class="px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-extrabold rounded-xl text-xs transition-all shadow-lg flex items-center gap-2">
-                    🖨️ Print E-Certificate
-                </button>
-                <button onclick="closeCertModal()" class="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl text-xs transition-all">
-                    Continue Quest
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- HIGH QUALITY PRINTABLE E-CERTIFICATE TEMPLATE -->
-    <div id="printable-certificate" class="hidden print-only flex-col justify-between h-full w-full bg-white text-slate-900 border-[14px] border-amber-600 p-8 rounded-xl shadow-2xl relative overflow-hidden">
-        <!-- Certificate Header -->
-        <div class="text-center space-y-2 relative z-10">
-            <div class="flex items-center justify-center gap-3">
-                <div class="w-12 h-12 rounded-full bg-amber-600 text-white flex items-center justify-center text-2xl font-extrabold">ℤ</div>
-                <h1 class="text-4xl font-extrabold text-amber-800 tracking-wider uppercase">IntegerQuest</h1>
-            </div>
-            <p class="text-xs uppercase tracking-widest text-slate-500 font-bold">Annual Mathematics Fair • Learners Category</p>
-            <h2 class="text-2xl font-extrabold text-slate-800 pt-2 border-b-2 border-amber-500 pb-1 max-w-xl mx-auto uppercase">Certificate of Achievement</h2>
-        </div>
-
-        <!-- Body Content -->
-        <div class="text-center space-y-4 my-auto relative z-10">
-            <p class="text-sm text-slate-600 italic">This official e-certificate is proudly presented to</p>
-            <div id="cert-student-name-print" class="text-3xl sm:text-4xl font-extrabold text-amber-900 uppercase tracking-wide border-b border-slate-400 pb-1 inline-block min-w-[320px]">
-                Learner Name
-            </div>
-            <p class="text-xs sm:text-sm text-slate-700 max-w-xl mx-auto leading-relaxed">
-                For outstanding mathematical performance in evaluating signed numbers, resolving zero-pair models, and demonstrating mastery over integer operations in real-world scenarios.
-            </p>
-        </div>
-
-        <!-- Seals & Signatures Row -->
-        <div class="flex justify-between items-end pt-6 border-t border-slate-300 relative z-10">
-            <div class="text-left space-y-1 text-xs">
-                <p class="font-bold text-slate-800" id="cert-score-print">Cumulative Score: 100 Points</p>
-                <p class="text-slate-500" id="cert-date-print">Issued Date: October 2026</p>
-                <p class="text-[10px] text-slate-400 font-mono">Verification ID: IQ-CERT-2026</p>
-            </div>
-
-            <div class="w-20 h-20 flex items-center justify-center">
-                <svg viewBox="0 0 100 100" class="w-full h-full text-amber-500 drop-shadow-md">
-                    <circle cx="50" cy="45" r="30" fill="currentColor"/>
-                    <path d="M35 65L25 90L45 80L50 90L55 80L75 90L65 65" fill="#d97706"/>
-                    <circle cx="50" cy="45" r="24" fill="#fef3c7" stroke="#b45309" stroke-width="2"/>
-                    <text x="50" y="49" text-anchor="middle" font-size="10" font-weight="bold" fill="#78350f">MASTER</text>
-                </svg>
-            </div>
-
-            <div class="text-right space-y-1 text-xs">
-                <div class="w-36 border-b border-slate-700 mx-auto mb-1"></div>
-                <p class="font-bold text-slate-800">Math Fair Facilitator</p>
-                <p class="text-[10px] text-slate-500">IntegerQuest Coordinator</p>
-            </div>
-        </div>
-    </div>
-
     <!-- FOOTER -->
-    <footer class="bg-slate-900 border-t border-slate-800 py-4 px-4 text-center text-xs text-slate-500 no-print">
-        <p>IntegerQuest • Web-Based Offline Math Fair Device</p>
+    <footer class="relative z-10 bg-slate-950/60 border-t border-white/10 px-4 py-2.5 text-center text-xs font-display font-semibold text-purple-200">
+        IntegerLab Kids: Math Hero • Grade 7 Learner's Math Fair Device Entry
     </footer>
 
-    <!-- JAVASCRIPT & OFFLINE SERVICE WORKER REGISTRATION -->
+    <!-- JAVASCRIPT ENGINE & LOGIC -->
     <script>
-        /* ================= PWA & SERVICE WORKER FOR 100% OFFLINE CAPABILITY ================= */
-        if ('serviceWorker' in navigator) {
-            const swCode = `
-                const CACHE_NAME = 'integerquest-v1';
-                self.addEventListener('install', (e) => {
-                    self.skipWaiting();
-                });
-                self.addEventListener('activate', (e) => {
-                    e.waitUntil(clients.claim());
-                });
-                self.addEventListener('fetch', (e) => {
-                    e.respondWith(
-                        caches.match(e.request).then((res) => {
-                            return res || fetch(e.request).then((networkRes) => {
-                                return caches.open(CACHE_NAME).then((cache) => {
-                                    cache.put(e.request, networkRes.clone());
-                                    return networkRes;
-                                });
-                            });
-                        }).catch(() => caches.match(e.request))
-                    );
-                });
-            `;
-            const blob = new Blob([swCode], { type: 'text/javascript' });
-            const swUrl = URL.createObjectURL(blob);
-            navigator.serviceWorker.register(swUrl).then(() => {
-                console.log('IntegerQuest Offline Service Worker Registered Successfully.');
-            }).catch(err => console.log('SW Registration:', err));
-        }
-
-        /* ================= STATE & APP DATA ================= */
-        const state = {
-            studentName: 'Learner',
-            score: 0,
-            lastMilestoneScore: 0,
-            streak: 0,
+        // --- DEVICE STATE ---
+        let state = {
+            valA: 5,
+            valB: -3,
+            operator: '+',
+            mode: '1d', // '1d', 'chips', 'game'
             soundEnabled: true,
-            activeTab: 'home',
-
-            jump: {
-                num1: 0,
-                num2: 0,
-                op: '+',
-                answer: 0,
-                currentPos: 0
-            },
-
-            pair: {
-                num1: 2,
-                num2: 5,
-                op: '-',
-                expectedVal: -3,
-                chips: [],
-                isPaired: false
-            },
-
-            speed: {
-                timer: 30,
-                timerInterval: null,
-                score: 0,
-                streak: 0,
-                active: false,
-                currentProblem: null
-            },
-
-            realworld: { current: null },
-
-            config: {
-                minRange: -10,
-                maxRange: 10,
-                ops: { add: true, sub: true, mul: true, div: true },
-                timerDuration: 30
-            }
+            gameScore: 0,
+            gameStreak: 0,
+            currentTarget: 0
         };
 
-        /* ================= AUDIO SYSTEM (WEB AUDIO API) ================= */
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        // Web Audio API Sound Synthesizer (Pops, Chimes & Fanfare)
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
 
-        function playSound(type) {
+        function playSoundEffect(type) {
             if (!state.soundEnabled) return;
             try {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
+                if (!audioCtx) audioCtx = new AudioContext();
 
-                const now = audioCtx.currentTime;
-
-                if (type === 'correct') {
+                if (type === 'pop') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
                     osc.type = 'sine';
-                    osc.frequency.setValueAtTime(523.25, now);
-                    osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.15);
-                    gain.gain.setValueAtTime(0.2, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
-                    osc.start(now);
-                    osc.stop(now + 0.3);
+                    osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.05);
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.05);
+                } else if (type === 'correct') {
+                    // Cheerful Chime
+                    const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                    notes.forEach((freq, idx) => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, audioCtx.currentTime + idx * 0.06);
+                        gain.gain.setValueAtTime(0.08, audioCtx.currentTime + idx * 0.06);
+                        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + idx * 0.06 + 0.2);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(audioCtx.currentTime + idx * 0.06);
+                        osc.stop(audioCtx.currentTime + idx * 0.06 + 0.2);
+                    });
                 } else if (type === 'wrong') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
                     osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(180, now);
-                    osc.frequency.exponentialRampToValueAtTime(110, now + 0.2);
-                    gain.gain.setValueAtTime(0.3, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
-                    osc.start(now);
-                    osc.stop(now + 0.25);
-                } else if (type === 'pop') {
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(320, now);
-                    osc.frequency.exponentialRampToValueAtTime(500, now + 0.08);
-                    gain.gain.setValueAtTime(0.15, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-                    osc.start(now);
-                    osc.stop(now + 0.1);
+                    osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(180, audioCtx.currentTime + 0.1);
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.25);
                 }
-            } catch (e) {}
+            } catch (e) {
+                // Audio safely fails if muted by browser
+            }
         }
 
-        function toggleSound() {
-            state.soundEnabled = !state.soundEnabled;
-            const icon = document.getElementById('sound-icon');
-            icon.textContent = state.soundEnabled ? '🔊' : '🔇';
+        // --- INITIALIZATION ---
+        window.onload = function() {
+            setupCanvas();
+            updateFromInputs();
+            window.addEventListener('resize', setupCanvas);
+        };
+
+        // --- INPUT & CONTROL HANDLERS ---
+        function adjustVal(varName, delta) {
+            if (varName === 'a') {
+                const slider = document.getElementById('slider-a');
+                slider.value = parseInt(slider.value) + delta;
+            } else {
+                const slider = document.getElementById('slider-b');
+                slider.value = parseInt(slider.value) + delta;
+            }
+            playSoundEffect('pop');
+            updateFromInputs();
         }
 
-        /* ================= NAVIGATION ================= */
-        function showTab(tabId) {
-            state.activeTab = tabId;
-
-            document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
-            document.querySelectorAll('.nav-tab').forEach(btn => {
-                btn.classList.remove('text-brand-blue', 'border-b-2', 'border-brand-blue');
-                btn.classList.add('text-slate-400');
+        function setOperator(op) {
+            state.operator = op;
+            document.querySelectorAll('.op-btn').forEach(btn => {
+                btn.className = "op-btn py-2.5 rounded-xl font-display font-black text-2xl text-slate-600 hover:bg-white transition transform active:scale-95";
             });
 
-            const activeView = document.getElementById(`view-${tabId}`);
-            if (activeView) {
-                activeView.classList.remove('hidden');
-                activeView.classList.add('animate-pop');
+            let btnId = 'op-add';
+            if (op === '-') btnId = 'op-sub';
+            if (op === '×') btnId = 'op-mul';
+            if (op === '÷') btnId = 'op-div';
+
+            document.getElementById(btnId).className = "op-btn py-2.5 rounded-xl font-display font-black text-2xl bg-gradient-to-r from-emerald-400 to-teal-500 text-white shadow-md transition transform active:scale-95";
+
+            playSoundEffect('pop');
+            updateFromInputs();
+        }
+
+        function loadPreset(a, b, op) {
+            document.getElementById('slider-a').value = a;
+            document.getElementById('slider-b').value = b;
+            setOperator(op);
+        }
+
+        function resetValues() {
+            document.getElementById('slider-a').value = 5;
+            document.getElementById('slider-b').value = -3;
+            setOperator('+');
+            playSoundEffect('pop');
+        }
+
+        function updateFromInputs() {
+            state.valA = parseInt(document.getElementById('slider-a').value);
+            state.valB = parseInt(document.getElementById('slider-b').value);
+
+            // Update Badges
+            const badgeA = document.getElementById('val-a-badge');
+            const badgeB = document.getElementById('val-b-badge');
+
+            badgeA.innerText = (state.valA >= 0 ? '+' : '') + state.valA;
+            badgeA.className = `font-display font-black text-lg px-3 py-0.5 rounded-xl text-white shadow ${state.valA >= 0 ? 'bg-emerald-500' : 'bg-rose-500'}`;
+
+            badgeB.innerText = (state.valB >= 0 ? '+' : '') + state.valB;
+            badgeB.className = `font-display font-black text-lg px-3 py-0.5 rounded-xl text-white shadow ${state.valB >= 0 ? 'bg-emerald-500' : 'bg-rose-500'}`;
+
+            computeAndRender();
+        }
+
+        // --- MATH ENGINE & CALCULATIONS ---
+        function calculateResult() {
+            let res = 0;
+            switch(state.operator) {
+                case '+': res = state.valA + state.valB; break;
+                case '-': res = state.valA - state.valB; break;
+                case '×': res = state.valA * state.valB; break;
+                case '÷': res = state.valB !== 0 ? (state.valA / state.valB).toFixed(2) : 'Undefined'; break;
             }
-
-            const activeNav = document.getElementById(`tab-${tabId}`);
-            if (activeNav) {
-                activeNav.classList.remove('text-slate-400');
-                activeNav.classList.add('text-brand-blue', 'border-b-2', 'border-brand-blue');
-            }
-
-            if (tabId === 'jump') renderNumberLineTicks();
-            if (tabId === 'chips' && state.pair.chips.length === 0) generatePairProblem();
-            if (tabId === 'realworld' && !state.realworld.current) generateRealWorldQuest();
+            return res;
         }
 
-        /* ================= LOCAL STORAGE PERSISTENCE ================= */
-        function saveStudentName(name) {
-            if (!name) name = '';
-            state.studentName = name.trim();
+        function setMode(modeName) {
+            state.mode = modeName;
 
-            const nameVal = state.studentName;
-            if (document.getElementById('global-student-name').value !== nameVal) {
-                document.getElementById('global-student-name').value = nameVal;
-            }
-            if (document.getElementById('home-student-name').value !== nameVal) {
-                document.getElementById('home-student-name').value = nameVal;
-            }
-            if (document.getElementById('cfg-student-name').value !== nameVal) {
-                document.getElementById('cfg-student-name').value = nameVal;
-            }
-
-            localStorage.setItem('integerquest_name', state.studentName);
-        }
-
-        function recordAttempt(isCorrect, pts = 10) {
-            if (isCorrect) {
-                state.score += pts;
-                state.streak++;
-                playSound('correct');
-
-                if (state.score > 0 && Math.floor(state.score / 100) > Math.floor(state.lastMilestoneScore / 100)) {
-                    state.lastMilestoneScore = state.score;
-                    openCertificateModal();
-                }
-            } else {
-                state.streak = 0;
-                playSound('wrong');
-            }
-
-            updateStatsHeader();
-            saveStateToStorage();
-        }
-
-        function updateStatsHeader() {
-            document.getElementById('nav-score').textContent = state.score;
-            document.getElementById('nav-streak').textContent = state.streak;
-        }
-
-        function saveStateToStorage() {
-            localStorage.setItem('integerquest_score', state.score);
-            localStorage.setItem('integerquest_milestone', state.lastMilestoneScore);
-        }
-
-        function loadStateFromStorage() {
-            const savedScore = localStorage.getItem('integerquest_score');
-            if (savedScore) state.score = parseInt(savedScore, 10) || 0;
-
-            const savedMs = localStorage.getItem('integerquest_milestone');
-            if (savedMs) state.lastMilestoneScore = parseInt(savedMs, 10) || 0;
-
-            const savedName = localStorage.getItem('integerquest_name');
-            if (savedName) saveStudentName(savedName);
-
-            const savedCfg = localStorage.getItem('iq_settings');
-            if (savedCfg) {
-                try {
-                    const parsed = JSON.parse(savedCfg);
-                    if (parsed) {
-                        state.config = { ...state.config, ...parsed };
-                    }
-                } catch(e) {}
-            }
-            applyConfigToInputs();
-
-            updateStatsHeader();
-        }
-
-        function applyConfigToInputs() {
-            document.getElementById('cfg-range-min').value = state.config.minRange;
-            document.getElementById('cfg-range-max').value = state.config.maxRange;
-            document.getElementById('cfg-timer').value = state.config.timerDuration;
-
-            document.getElementById('op-chk-add').checked = state.config.ops.add;
-            document.getElementById('op-chk-sub').checked = state.config.ops.sub;
-            document.getElementById('op-chk-mul').checked = state.config.ops.mul;
-            document.getElementById('op-chk-div').checked = state.config.ops.div;
-        }
-
-
-        /* ================= NUMBER LINE LOGIC ================= */
-        function renderNumberLineTicks() {
-            const container = document.getElementById('number-line-ticks');
-            container.innerHTML = '';
-            
-            const min = state.config.minRange;
-            const max = state.config.maxRange;
-
-            for (let i = min; i <= max; i++) {
-                const tick = document.createElement('div');
-                tick.className = 'flex flex-col items-center cursor-pointer';
-                tick.onclick = () => moveJumperToValue(i);
-
-                const line = document.createElement('div');
-                line.className = `w-1 ${i === 0 ? 'h-6 bg-brand-purple' : 'h-3 bg-slate-600'} rounded-full`;
-
-                const label = document.createElement('span');
-                label.className = `text-[10px] mt-1 font-bold ${i === 0 ? 'text-brand-purple' : i > 0 ? 'text-emerald-400' : 'text-red-400'}`;
-                label.textContent = i;
-
-                tick.appendChild(line);
-                tick.appendChild(label);
-                container.appendChild(tick);
-            }
-
-            if (state.jump.num1 === 0 && state.jump.num2 === 0) generateJumpProblem();
-        }
-
-        function getRandomInt(min, max) {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
-
-        function generateJumpProblem() {
-            const min = state.config.minRange;
-            const max = state.config.maxRange;
-
-            const enabledOps = [];
-            if (state.config.ops.add) enabledOps.push('+');
-            if (state.config.ops.sub) enabledOps.push('-');
-            if (enabledOps.length === 0) enabledOps.push('+');
-
-            state.jump.op = enabledOps[Math.floor(Math.random() * enabledOps.length)];
-            state.jump.num1 = getRandomInt(min, max);
-            state.jump.num2 = getRandomInt(min, max);
-
-            state.jump.answer = state.jump.op === '+' ? state.jump.num1 + state.jump.num2 : state.jump.num1 - state.jump.num2;
-
-            if (state.jump.answer < min || state.jump.answer > max) return generateJumpProblem();
-
-            const eq = `${state.jump.num1 < 0 ? `(${state.jump.num1})` : state.jump.num1} ${state.jump.op} ${state.jump.num2 < 0 ? `(${state.jump.num2})` : state.jump.num2} = ?`;
-            document.getElementById('jump-equation').textContent = eq;
-            document.getElementById('jump-explanation').textContent = `Start at ${state.jump.num1}, move ${state.jump.op === '+' ? 'right/left' : 'in reverse'} by ${Math.abs(state.jump.num2)}.`;
-            document.getElementById('jump-feedback').textContent = '';
-            document.getElementById('jump-user-input').value = '';
-
-            moveJumperToValue(state.jump.num1);
-            document.getElementById('jump-score-tag').textContent = `Streak: ${state.streak}`;
-        }
-
-        function moveJumperToValue(val) {
-            const min = state.config.minRange;
-            const max = state.config.maxRange;
-            const clamped = Math.max(min, Math.min(max, val));
-
-            state.jump.currentPos = clamped;
-            const percentage = ((clamped - min) / (max - min)) * 100;
-
-            const jumper = document.getElementById('jumper-marker');
-            if (jumper) {
-                jumper.style.left = `${percentage}%`;
-            }
-            const badge = document.getElementById('jumper-val-badge');
-            if (badge) {
-                badge.textContent = clamped > 0 ? `+${clamped}` : `${clamped}`;
-            }
-        }
-
-        function animateJumpSteps() {
-            const start = state.jump.num1;
-            const end = state.jump.answer;
-            let current = start;
-
-            moveJumperToValue(current);
-
-            const step = end > start ? 1 : -1;
-            const interval = setInterval(() => {
-                if (current === end) {
-                    clearInterval(interval);
-                    document.getElementById('jump-feedback').className = "mt-4 text-center font-bold text-sm text-emerald-400";
-                    document.getElementById('jump-feedback').textContent = `Arrived at ${end}!`;
+            // Nav buttons state
+            ['1d', 'chips', 'game'].forEach(m => {
+                const navBtn = document.getElementById(`nav-mode-${m}`);
+                if (m === modeName) {
+                    navBtn.className = "px-4 py-2 rounded-xl transition-all flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg font-bold";
                 } else {
-                    current += step;
-                    moveJumperToValue(current);
-                    playSound('pop');
+                    navBtn.className = "px-4 py-2 rounded-xl transition-all flex items-center gap-2 text-purple-200 hover:text-white font-bold";
                 }
-            }, 400);
-        }
-
-        function checkJumpAnswer() {
-            const input = document.getElementById('jump-user-input').value;
-            if (input === '') return;
-
-            const val = parseInt(input, 10);
-            const feedback = document.getElementById('jump-feedback');
-
-            if (val === state.jump.answer) {
-                feedback.className = "mt-4 text-center font-bold text-sm text-emerald-400";
-                feedback.textContent = `🎉 Excellent! Correct answer is ${val}!`;
-                moveJumperToValue(val);
-                recordAttempt(true, 10);
-                setTimeout(generateJumpProblem, 2000);
-            } else {
-                feedback.className = "mt-4 text-center font-bold text-sm text-red-400";
-                feedback.textContent = `❌ Try again! Hint: Start at ${state.jump.num1} and move ${state.jump.op === '+' ? 'by ' + state.jump.num2 : 'reverse by ' + state.jump.num2}.`;
-                recordAttempt(false);
-            }
-        }
-
-
-        /* ================= GET MY PAIRS LOGIC ================= */
-        function generatePairProblem() {
-            const min = state.config.minRange < -8 ? -8 : state.config.minRange;
-            const max = state.config.maxRange > 8 ? 8 : state.config.maxRange;
-
-            state.pair.num1 = getRandomInt(min, max);
-            state.pair.num2 = getRandomInt(min, max);
-            state.pair.op = '+';
-
-            state.pair.expectedVal = state.pair.num1 + state.pair.num2;
-
-            const n1Str = state.pair.num1 >= 0 ? `(+${state.pair.num1})` : `(${state.pair.num1})`;
-            const n2Str = state.pair.num2 >= 0 ? `(+${state.pair.num2})` : `(${state.pair.num2})`;
-
-            document.getElementById('pair-target-text').textContent = `${n1Str} + ${n2Str} = ?`;
-
-            state.pair.chips = [];
-            state.pair.isPaired = false;
-            renderPairWorkspace();
-            document.getElementById('pair-feedback').textContent = '';
-        }
-
-        function handleChipDragStart(e, type) {
-            e.dataTransfer.setData('text/plain', type);
-        }
-
-        function handleCanvasDragOver(e) {
-            e.preventDefault();
-        }
-
-        function handleCanvasDrop(e) {
-            e.preventDefault();
-            const type = e.dataTransfer.getData('text/plain');
-            if (type === 'pos' || type === 'neg') {
-                addChipToWork(type);
-            }
-        }
-
-        function addChipToWork(type) {
-            if (state.pair.isPaired) {
-                state.pair.isPaired = false;
-                state.pair.chips = state.pair.chips.filter(c => !c.isVanished);
-            }
-
-            const val = type === 'pos' ? 1 : -1;
-            state.pair.chips.push({
-                id: 'chip_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
-                value: val,
-                isVanished: false
             });
-            playSound('pop');
-            renderPairWorkspace();
+
+            document.getElementById('vectorCanvas').classList.toggle('hidden', modeName !== '1d');
+            document.getElementById('chipsContainer').classList.toggle('hidden', modeName !== 'chips');
+            document.getElementById('gameContainer').classList.toggle('hidden', modeName !== 'game');
+
+            const titleMap = {
+                '1d': ['VECTOR NUMBER LINE ADVENTURE', 'Directional Displacement Mode'],
+                'chips': ['MAGIC ZERO-PAIR CHARGE LAB', 'Particle Neutralization Model'],
+                'game': ['INTEGER HERO ARCADE QUEST', 'Interactive Challenge Center']
+            };
+            document.getElementById('workspace-title').innerText = titleMap[modeName][0];
+            document.getElementById('workspace-subtitle').innerText = titleMap[modeName][1];
+
+            if (modeName === 'game') initChallenge();
+
+            playSoundEffect('pop');
+            computeAndRender();
         }
 
-        function removeChipById(id) {
-            state.pair.chips = state.pair.chips.filter(c => c.id !== id);
-            playSound('pop');
-            renderPairWorkspace();
+        function computeAndRender() {
+            const res = calculateResult();
+
+            const strA = state.valA >= 0 ? `(+${state.valA})` : `(${state.valA})`;
+            const strB = state.valB >= 0 ? `(+${state.valB})` : `(${state.valB})`;
+            const strRes = typeof res === 'number' ? (res >= 0 ? `+${res}` : `${res}`) : res;
+
+            document.getElementById('display-expression').innerText = `${strA} ${state.operator} ${strB} = ${strRes}`;
+            document.getElementById('display-result').innerText = strRes;
+
+            document.getElementById('display-abs-a').innerText = `|${state.valA}| = ${Math.abs(state.valA)} units`;
+            document.getElementById('display-abs-b').innerText = `|${state.valB}| = ${Math.abs(state.valB)} units`;
+
+            if (state.mode === '1d') renderVectorCanvas(res);
+            if (state.mode === 'chips') renderChipsModel();
+
+            updateMascotAndExplanation(res);
         }
 
-        function clearWorkAreas() {
-            state.pair.chips = [];
-            state.pair.isPaired = false;
-            renderPairWorkspace();
-            document.getElementById('pair-feedback').textContent = '';
+        // --- MODE 1: CANVAS VECTOR NUMBER LINE ---
+        let canvas, ctx;
+
+        function setupCanvas() {
+            canvas = document.getElementById('vectorCanvas');
+            if (!canvas) return;
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            computeAndRender();
         }
 
-        function renderPairWorkspace() {
-            const grid = document.getElementById('canvas-chips-grid');
-            grid.innerHTML = '';
+        function renderVectorCanvas(resultVal) {
+            if (!canvas || !ctx) ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+
+            ctx.clearRect(0, 0, width, height);
+
+            const maxVal = 15;
+            const centerY = height / 2 + 20;
+            const originX = width / 2;
+            const stepX = (width - 80) / (maxVal * 2);
+
+            // Draw Axis Grid
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 1;
+            for (let i = -maxVal; i <= maxVal; i += 2) {
+                const x = originX + i * stepX;
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+                ctx.stroke();
+            }
+
+            // Main Number Line
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(30, centerY);
+            ctx.lineTo(width - 30, centerY);
+            ctx.stroke();
+
+            // Axis Ticks & Labels
+            ctx.font = 'bold 12px Fredoka, sans-serif';
+            ctx.textAlign = 'center';
+
+            for (let i = -maxVal; i <= maxVal; i++) {
+                const x = originX + i * stepX;
+                
+                ctx.strokeStyle = i === 0 ? '#f59e0b' : '#64748b';
+                ctx.lineWidth = i === 0 ? 4 : 2;
+                ctx.beginPath();
+                ctx.moveTo(x, centerY - (i === 0 ? 12 : 6));
+                ctx.lineTo(x, centerY + (i === 0 ? 12 : 6));
+                ctx.stroke();
+
+                ctx.fillStyle = i === 0 ? '#f59e0b' : '#cbd5e1';
+                ctx.fillText(i > 0 ? `+${i}` : `${i}`, x, centerY + 28);
+            }
+
+            // DRAW VECTORS
+            const a = state.valA;
+            const b = state.valB;
+
+            if (state.operator === '+' || state.operator === '-') {
+                // Vector A
+                const endAX = originX + a * stepX;
+                drawVectorArrow(ctx, originX, centerY - 45, endAX, centerY - 45, '#10b981', `Start Vector: ${a >= 0 ? '+' : ''}${a}`);
+
+                // Vector B
+                if (typeof resultVal === 'number') {
+                    const resultX = originX + resultVal * stepX;
+                    const labelB = state.operator === '-' ? `Minus (${b >= 0 ? '+' : ''}${b})` : `Plus (${b >= 0 ? '+' : ''}${b})`;
+                    drawVectorArrow(ctx, endAX, centerY - 85, resultX, centerY - 85, '#ec4899', labelB);
+
+                    // Hero Avatar Jumper Marker
+                    ctx.fillStyle = '#f59e0b';
+                    ctx.beginPath();
+                    ctx.arc(resultX, centerY, 9, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+
+                    // Star Icon over result
+                    ctx.fillStyle = '#f59e0b';
+                    ctx.fillText(`★ Net: ${resultVal}`, resultX, centerY - 100);
+                }
+            } else if (typeof resultVal === 'number') {
+                const resultX = originX + resultVal * stepX;
+                drawVectorArrow(ctx, originX, centerY - 65, resultX, centerY - 65, '#06b6d4', `Product Vector: ${resultVal}`);
+            }
+        }
+
+        function drawVectorArrow(ctx, fromX, fromY, toX, toY, color, label) {
+            if (fromX === toX) return;
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.lineWidth = 4;
+
+            ctx.beginPath();
+            ctx.moveTo(fromX, fromY);
+            ctx.lineTo(toX, fromY);
+            ctx.stroke();
+
+            const angle = toX > fromX ? 0 : Math.PI;
+            ctx.beginPath();
+            ctx.moveTo(toX, fromY);
+            ctx.lineTo(toX - 12 * Math.cos(angle - Math.PI / 6), fromY - 12 * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(toX - 12 * Math.cos(angle + Math.PI / 6), fromY - 12 * Math.sin(angle + Math.PI / 6));
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.font = 'bold 12px Outfit, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, (fromX + toX) / 2, fromY - 10);
+        }
+
+        // --- MODE 2: ZERO-PAIR CHARGE LAB ---
+        function renderChipsModel() {
+            const posContainer = document.getElementById('pos-chips');
+            const negContainer = document.getElementById('neg-chips');
+            posContainer.innerHTML = '';
+            negContainer.innerHTML = '';
 
             let posCount = 0;
             let negCount = 0;
 
-            state.pair.chips.forEach(chip => {
-                if (chip.isVanished) return;
+            if (state.operator === '+') {
+                if (state.valA > 0) posCount += state.valA;
+                else negCount += Math.abs(state.valA);
 
-                if (chip.value > 0) posCount++;
-                else negCount++;
+                if (state.valB > 0) posCount += state.valB;
+                else negCount += Math.abs(state.valB);
+            } else if (state.operator === '-') {
+                if (state.valA > 0) posCount += state.valA;
+                else negCount += Math.abs(state.valA);
 
-                const el = document.createElement('div');
-                el.id = chip.id;
-                el.className = `w-12 h-12 rounded-full ${chip.value > 0 ? 'chip-pos' : 'chip-neg'} font-extrabold text-sm flex items-center justify-center cursor-pointer transform hover:scale-110 transition-all duration-300 animate-pop shadow-lg`;
-                el.textContent = chip.value > 0 ? '+1' : '-1';
-                el.title = "Click to remove chip";
+                const effectiveB = -state.valB;
+                if (effectiveB > 0) posCount += effectiveB;
+                else negCount += Math.abs(effectiveB);
+            } else {
+                const res = calculateResult();
+                if (typeof res === 'number') {
+                    if (res > 0) posCount = Math.min(Math.abs(res), 24);
+                    else negCount = Math.min(Math.abs(res), 24);
+                }
+            }
+
+            document.getElementById('pos-count-tag').innerText = posCount;
+            document.getElementById('neg-count-tag').innerText = negCount;
+
+            const zeroPairs = Math.min(posCount, negCount);
+
+            // Render (+) Particles
+            for (let i = 0; i < posCount; i++) {
+                const chip = document.createElement('div');
+                const isPair = i < zeroPairs;
+                chip.className = `w-9 h-9 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-500 text-slate-950 font-display font-black text-sm flex items-center justify-center shadow-lg border-2 border-cyan-300 ${isPair ? 'animate-pair ring-2 ring-yellow-400' : ''}`;
+                chip.innerHTML = '<i class="fa-solid fa-battery-full text-xs mr-0.5"></i>+';
+                posContainer.appendChild(chip);
+            }
+
+            // Render (-) Particles
+            for (let i = 0; i < negCount; i++) {
+                const chip = document.createElement('div');
+                const isPair = i < zeroPairs;
+                chip.className = `w-9 h-9 rounded-2xl bg-gradient-to-tr from-rose-500 to-pink-600 text-white font-display font-black text-sm flex items-center justify-center shadow-lg border-2 border-rose-300 ${isPair ? 'animate-pair ring-2 ring-yellow-400' : ''}`;
+                chip.innerHTML = '<i class="fa-solid fa-fire text-xs mr-0.5"></i>−';
+                negContainer.appendChild(chip);
+            }
+
+            const net = posCount - negCount;
+            document.getElementById('zero-pair-summary').innerText = 
+                `⚡ Zero-Pairs Neutralized: ${zeroPairs} | Unpaired Remaining Net Charge: ${net >= 0 ? '+' : ''}${net}`;
+        }
+
+        // --- MODE 3: GAMIFIED ARCADE QUEST ---
+        function initChallenge() {
+            state.currentTarget = Math.floor(Math.random() * 16) - 8;
+            document.getElementById('game-prompt').innerText = `Reach Target Output: ${state.currentTarget >= 0 ? '+' : ''}${state.currentTarget}`;
+            document.getElementById('game-status').innerText = `Adjust Integer inputs A, B and Operator to match ${state.currentTarget}!`;
+            document.getElementById('game-status').className = "text-sm font-display font-bold text-slate-300";
+        }
+
+        function submitChallenge() {
+            const currentRes = calculateResult();
+            if (currentRes === state.currentTarget) {
+                state.gameScore += 100 + (state.gameStreak * 20);
+                state.gameStreak += 1;
                 
-                el.onclick = () => removeChipById(chip.id);
-                grid.appendChild(el);
-            });
+                document.getElementById('game-score').innerText = String(state.gameScore).padStart(3, '0');
+                document.getElementById('game-streak').innerText = `🔥 x${state.gameStreak}`;
+                document.getElementById('game-status').innerText = "🎉 AWESOME JOB! Target Matched Perfectly!";
+                document.getElementById('game-status').className = "text-sm font-display font-black text-emerald-400";
+                
+                playSoundEffect('correct');
 
-            document.getElementById('canvas-pos-count').textContent = posCount;
-            document.getElementById('canvas-neg-count').textContent = negCount;
-            document.getElementById('summary-pos').textContent = posCount;
-            document.getElementById('summary-neg').textContent = negCount;
-            document.getElementById('current-total-chips').textContent = posCount + negCount;
-        }
-
-        function checkAndPairUp() {
-            const posChips = state.pair.chips.filter(c => !c.isVanished && c.value === 1);
-            const negChips = state.pair.chips.filter(c => !c.isVanished && c.value === -1);
-
-            const pairCount = Math.min(posChips.length, negChips.length);
-            const feedback = document.getElementById('pair-feedback');
-
-            if (posChips.length === 0 && negChips.length === 0) {
-                feedback.className = "mt-3 text-center font-bold text-sm text-amber-400";
-                feedback.textContent = "Please add white or black chips to the workspace canvas first!";
-                return;
-            }
-
-            state.pair.isPaired = true;
-
-            if (pairCount > 0) {
-                let currentPair = 0;
-
-                const animateStep = () => {
-                    if (currentPair < pairCount) {
-                        const pChip = posChips[currentPair];
-                        const nChip = negChips[currentPair];
-
-                        pChip.isVanished = true;
-                        nChip.isVanished = true;
-
-                        const pEl = document.getElementById(pChip.id);
-                        const nEl = document.getElementById(nChip.id);
-
-                        if (pEl) pEl.classList.add('animate-vanish');
-                        if (nEl) nEl.classList.add('animate-vanish');
-
-                        playSound('pop');
-                        currentPair++;
-                        setTimeout(animateStep, 350);
-                    } else {
-                        finishPairEvaluation();
-                    }
-                };
-
-                animateStep();
+                // Confetti Celebration
+                if (typeof confetti === 'function') {
+                    confetti({
+                        particleCount: 80,
+                        spread: 70,
+                        origin: { y: 0.6 }
+                    });
+                }
             } else {
-                finishPairEvaluation();
+                state.gameStreak = 0;
+                document.getElementById('game-streak').innerText = `🔥 x0`;
+                document.getElementById('game-status').innerText = `❌ Output is (${currentRes}). Keep trying!`;
+                document.getElementById('game-status').className = "text-sm font-display font-black text-rose-400";
+                playSoundEffect('wrong');
             }
         }
 
-        function finishPairEvaluation() {
-            renderPairWorkspace();
+        function nextChallenge() {
+            initChallenge();
+            playSoundEffect('pop');
+        }
 
-            const feedback = document.getElementById('pair-feedback');
-            const remainingPos = state.pair.chips.filter(c => !c.isVanished && c.value === 1).length;
-            const remainingNeg = state.pair.chips.filter(c => !c.isVanished && c.value === -1).length;
-            const netAnswer = remainingPos - remainingNeg;
+        // --- MASCOT CHAT & PEDAGOGICAL COACHING ---
+        function updateMascotAndExplanation(res) {
+            const mascotText = document.getElementById('mascot-speech');
+            const pedagText = document.getElementById('pedagogical-text');
+            const a = state.valA;
+            const b = state.valB;
 
-            if (netAnswer === state.pair.expectedVal) {
-                feedback.className = "mt-3 text-center font-bold text-sm text-emerald-400";
-                if (remainingNeg > 0) {
-                    feedback.textContent = `🎉 Correct! All zero pairs canceled out. ${remainingNeg} black chip(s) remain, giving the answer ${netAnswer}!`;
-                } else if (remainingPos > 0) {
-                    feedback.textContent = `🎉 Correct! All zero pairs canceled out. ${remainingPos} white chip(s) remain, giving the answer +${netAnswer}!`;
+            if (state.operator === '+') {
+                if (b >= 0) {
+                    mascotText.innerText = `"Adding positive ${b} moves us RIGHT! We start at ${a} and land on ${res}!"`;
+                    pedagText.innerHTML = `Starting at <strong>${a}</strong>, move <strong>${b} steps right</strong> (positive direction) to land on <strong>${res}</strong>.`;
                 } else {
-                    feedback.textContent = `🎉 Correct! All zero pairs completely canceled out, leaving an answer of 0!`;
+                    mascotText.innerText = `"Adding negative (${b}) is like walking LEFT! From ${a}, step back ${Math.abs(b)} to land on ${res}!"`;
+                    pedagText.innerHTML = `Adding a negative number is equivalent to subtraction. Start at <strong>${a}</strong>, move <strong>${Math.abs(b)} steps left</strong> to reach <strong>${res}</strong>.`;
                 }
-                recordAttempt(true, 15);
-                setTimeout(generatePairProblem, 3200);
-            } else {
-                feedback.className = "mt-3 text-center font-bold text-sm text-red-400";
-                feedback.textContent = `❌ Remaining net is ${netAnswer > 0 ? '+' + netAnswer : netAnswer}. Expected answer is ${state.pair.expectedVal > 0 ? '+' + state.pair.expectedVal : state.pair.expectedVal}. Clear or adjust your chips to try again!`;
-                recordAttempt(false);
-            }
-        }
-
-
-        /* ================= SPEED RUN LOGIC ================= */
-        function startSpeedRun() {
-            state.speed.score = 0;
-            state.speed.streak = 0;
-            state.speed.timer = state.config.timerDuration;
-            state.speed.active = true;
-
-            document.getElementById('speed-pregame').classList.add('hidden');
-            document.getElementById('speed-active-card').classList.remove('hidden');
-            document.getElementById('speed-score').textContent = '0';
-            document.getElementById('speed-streak').textContent = '0';
-            document.getElementById('speed-timer').textContent = `${state.speed.timer}s`;
-
-            generateSpeedProblem();
-
-            if (state.speed.timerInterval) clearInterval(state.speed.timerInterval);
-            state.speed.timerInterval = setInterval(() => {
-                state.speed.timer--;
-                document.getElementById('speed-timer').textContent = `${state.speed.timer}s`;
-
-                if (state.speed.timer <= 0) {
-                    clearInterval(state.speed.timerInterval);
-                    endSpeedRun();
+            } else if (state.operator === '-') {
+                if (b < 0) {
+                    mascotText.innerText = `"Double Negative Alert! Subtracting (${b}) turns into ADDING +${Math.abs(b)}! Reverse directions!"`;
+                    pedagText.innerHTML = `<strong>Double Negative Rule:</strong> Subtracting a negative reverses direction: ${a} − (${b}) = ${a} + ${Math.abs(b)} = <strong>${res}</strong>.`;
+                } else {
+                    mascotText.innerText = `"Subtracting ${b} moves us LEFT on the line from ${a}!"`;
+                    pedagText.innerHTML = `Starting at <strong>${a}</strong>, move <strong>${b} steps left</strong> to land on <strong>${res}</strong>.`;
                 }
-            }, 1000);
-        }
-
-        function generateSpeedProblem() {
-            const min = state.config.minRange;
-            const max = state.config.maxRange;
-
-            const enabledOps = [];
-            if (state.config.ops.add) enabledOps.push('+');
-            if (state.config.ops.sub) enabledOps.push('-');
-            if (state.config.ops.mul) enabledOps.push('×');
-            if (state.config.ops.div) enabledOps.push('÷');
-            if (enabledOps.length === 0) enabledOps.push('+');
-
-            const op = enabledOps[Math.floor(Math.random() * enabledOps.length)];
-            let n1 = getRandomInt(min, max);
-            let n2 = getRandomInt(min, max);
-            if (n1 === 0) n1 = 1;
-            if (n2 === 0) n2 = 1;
-
-            let ans = 0;
-            if (op === '+') ans = n1 + n2;
-            else if (op === '-') ans = n1 - n2;
-            else if (op === '×') ans = n1 * n2;
-            else if (op === '÷') {
-                ans = n1;
-                n1 = n1 * n2;
-            }
-
-            state.speed.currentProblem = { n1, n2, op, ans };
-
-            const card = document.getElementById('speed-flash-card');
-            card.textContent = `${n1 < 0 ? `(${n1})` : n1} ${op} ${n2 < 0 ? `(${n2})` : n2}`;
-            const input = document.getElementById('speed-input');
-            input.value = '';
-            input.focus();
-        }
-
-        function submitSpeedAnswer(e) {
-            e.preventDefault();
-            if (!state.speed.active) return;
-
-            const input = document.getElementById('speed-input');
-            const val = parseInt(input.value, 10);
-
-            if (!isNaN(val) && val === state.speed.currentProblem.ans) {
-                state.speed.score += 10;
-                state.speed.streak++;
-                playSound('correct');
+            } else if (state.operator === '×') {
+                const likeSigns = (a >= 0 && b >= 0) || (a < 0 && b < 0);
+                mascotText.innerText = likeSigns 
+                    ? `"Same signs always give a POSITIVE (+) result! ${a} × ${b} = ${res}"`
+                    : `"Different signs always give a NEGATIVE (−) result! ${a} × ${b} = ${res}"`;
+                pedagText.innerHTML = `<strong>Multiplication Sign Rule:</strong> ${likeSigns ? 'Same signs yield Positive (+)' : 'Opposite signs yield Negative (−)'}. Output: <strong>${res}</strong>.`;
             } else {
-                state.speed.streak = 0;
-                playSound('wrong');
-            }
-
-            document.getElementById('speed-score').textContent = state.speed.score;
-            document.getElementById('speed-streak').textContent = state.speed.streak;
-
-            generateSpeedProblem();
-        }
-
-        function endSpeedRun() {
-            state.speed.active = false;
-            document.getElementById('speed-pregame').classList.remove('hidden');
-            document.getElementById('speed-active-card').classList.add('hidden');
-
-            const totalPts = state.speed.score;
-            recordAttempt(totalPts > 0, totalPts);
-
-            alert(`Sprint Complete! You scored ${totalPts} points in Speed Run!`);
-        }
-
-
-        /* ================= REAL WORLD SCENARIOS ================= */
-        const realWorldScenarios = [
-            {
-                category: 'Finance (₱)',
-                difficulty: 'Standard Quest',
-                story: 'Maria started with a balance of ₱150 in her savings. She bought a school notebook for ₱80, and then received an allowance of ₱200 from her parents. What is her new financial balance?',
-                visual: '🏦 Account Ledger: Start (₱150) − Expense (₱80) + Allowance (₱200)',
-                options: ['₱270', '₱130', '₱350', '₱120'],
-                correct: '₱270'
-            },
-            {
-                category: 'Temperature',
-                difficulty: 'Standard Quest',
-                story: 'At Mount Pulag summit, the temperature was recorded at -3°C early in the morning. By noon, the temperature rose by 8°C. What is the temperature at noon?',
-                visual: '🌡️ Thermometer: Start (-3°C) ➔ Rose (+8°C)',
-                options: ['+5°C', '-11°C', '+11°C', '-5°C'],
-                correct: '+5°C'
-            },
-            {
-                category: 'Elevation',
-                difficulty: 'Standard Quest',
-                story: 'A submarine was cruising at an elevation of 45 meters below sea level (-45m). It descended an additional 25 meters. What is the submarine\'s new elevation?',
-                visual: '🌊 Submarine: Start (-45m) ➔ Descends (-25m)',
-                options: ['-70m', '-20m', '+20m', '+70m'],
-                correct: '-70m'
-            }
-        ];
-
-        function generateRealWorldQuest() {
-            const scenario = realWorldScenarios[Math.floor(Math.random() * realWorldScenarios.length)];
-            state.realworld.current = scenario;
-
-            document.getElementById('rw-category-badge').textContent = `₱ ${scenario.category}`;
-            document.getElementById('rw-difficulty').textContent = scenario.difficulty;
-            document.getElementById('rw-story-text').textContent = scenario.story;
-            document.getElementById('rw-visual-box').textContent = scenario.visual;
-
-            const optContainer = document.getElementById('rw-options-container');
-            optContainer.innerHTML = '';
-
-            scenario.options.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.className = "w-full py-3 px-4 bg-slate-950 hover:bg-slate-800 border border-slate-700 rounded-xl text-white font-bold text-sm transition-all shadow";
-                btn.textContent = opt;
-                btn.onclick = () => checkRealWorldAnswer(opt);
-                optContainer.appendChild(btn);
-            });
-
-            document.getElementById('rw-feedback').textContent = '';
-        }
-
-        function checkRealWorldAnswer(selected) {
-            const feedback = document.getElementById('rw-feedback');
-
-            if (selected === state.realworld.current.correct) {
-                feedback.className = "mt-4 text-center font-bold text-sm text-emerald-400";
-                feedback.textContent = `🎉 Correct! You chose ${selected}. Great real-world math reasoning!`;
-                recordAttempt(true, 15);
-                setTimeout(generateRealWorldQuest, 2500);
-            } else {
-                feedback.className = "mt-4 text-center font-bold text-sm text-red-400";
-                feedback.textContent = `❌ Not quite! Review the positive and negative changes in the scenario and try again.`;
-                recordAttempt(false);
+                mascotText.innerText = `"Dividing ${a} into groups of ${b} gives ${res}!"`;
+                pedagText.innerHTML = `Dividing signed numbers follows identical sign rules as multiplication.`;
             }
         }
 
-
-        /* ================= SETTINGS ================= */
-        function saveSettings() {
-            const minInput = parseInt(document.getElementById('cfg-range-min').value, 10);
-            const maxInput = parseInt(document.getElementById('cfg-range-max').value, 10);
-
-            if (isNaN(minInput) || isNaN(maxInput) || minInput >= maxInput) {
-                alert("Please enter a valid range where Minimum is strictly less than Maximum.");
-                return;
-            }
-
-            state.config.minRange = minInput;
-            state.config.maxRange = maxInput;
-            state.config.timerDuration = parseInt(document.getElementById('cfg-timer').value, 10);
-
-            state.config.ops.add = document.getElementById('op-chk-add').checked;
-            state.config.ops.sub = document.getElementById('op-chk-sub').checked;
-            state.config.ops.mul = document.getElementById('op-chk-mul').checked;
-            state.config.ops.div = document.getElementById('op-chk-div').checked;
-
-            localStorage.setItem('iq_settings', JSON.stringify(state.config));
-
-            renderNumberLineTicks();
-            generateJumpProblem();
-
-            const msg = document.getElementById('settings-save-msg');
-            msg.style.opacity = '1';
-            playSound('correct');
-            setTimeout(() => { msg.style.opacity = '0'; }, 3000);
+        // --- AUXILIARY SOUND TOGGLE ---
+        function toggleSound() {
+            state.soundEnabled = !state.soundEnabled;
+            document.getElementById('sound-icon').className = state.soundEnabled ? "fa-solid fa-volume-high text-lg" : "fa-solid fa-volume-xmark text-rose-400 text-lg";
+            document.getElementById('sound-text').innerText = state.soundEnabled ? "SFX ON" : "MUTED";
         }
-
-
-        /* ================= E-CERTIFICATE MODAL & PRINT ================= */
-        function openCertificateModal() {
-            document.getElementById('cert-milestone-score').textContent = state.score;
-            document.getElementById('modal-student-name').textContent = state.studentName || 'Learner';
-            document.getElementById('cert-modal').classList.remove('hidden');
-            playSound('correct');
-        }
-
-        function openCertificateModalManual() {
-            if (state.score < 100) {
-                alert(`Reach at least 100 points to unlock your printable Math Fair certificate! Current Score: ${state.score} pts.`);
-                return;
-            }
-            openCertificateModal();
-        }
-
-        function closeCertModal() {
-            document.getElementById('cert-modal').classList.add('hidden');
-        }
-
-        function printCertificate() {
-            document.getElementById('cert-student-name-print').textContent = state.studentName || 'Learner';
-            document.getElementById('cert-score-print').textContent = `Cumulative Score: ${state.score} Points`;
-            document.getElementById('cert-date-print').textContent = `Issued Date: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`;
-
-            window.print();
-        }
-
-        /* ================= INITIALIZATION ================= */
-        window.onload = function() {
-            loadStateFromStorage();
-            showTab('home');
-        };
     </script>
 </body>
 </html>
